@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/podcasts/generate"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "job_id": "job:test456",
+      "status": "submitted",
+      "message": "Podcast generation started"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

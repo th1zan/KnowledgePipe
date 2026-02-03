@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/api/sources/.*/status"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": "source:test789",
+      "status": "completed",
+      "title": "Test Article"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

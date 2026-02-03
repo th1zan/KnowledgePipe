@@ -1,0 +1,78 @@
+# Docker Compose configuration for integration tests
+# Usage: docker compose -f tests/integration/docker-compose.test.yml up -d
+#
+# This provides mock services for testing the full pipeline:
+# - Mock Readeck API
+# - Mock Open Notebook API
+# - sync-orchestrator service
+
+services:
+  # Mock Readeck API using WireMock
+  mock-readeck:
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./mocks/readeck:/home/wiremock
+    command: ["--verbose"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/__admin/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Mock Open Notebook API using WireMock
+  mock-opennotebook:
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "5055:8080"
+    volumes:
+      - ./mocks/opennotebook:/home/wiremock
+    command: ["--verbose"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/__admin/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Sync Orchestrator service
+  sync-orchestrator:
+    build:
+      context: ../../orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - READECK_URL=http://mock-readeck:8080
+      - READECK_TOKEN=test-token
+      - OPEN_NOTEBOOK_URL=http://mock-opennotebook:8080
+      - OPEN_NOTEBOOK_PASSWORD=test-password
+      - RSS_FEEDS=http://mock-readeck:8080/test-feed.rss
+      - DATABASE_PATH=/data/state.db
+      - AUDIO_HOSTING=local
+      - AUDIO_LOCAL_PATH=/audio
+      - AUDIO_PUBLIC_URL=http://localhost:8002/audio
+      - LOG_LEVEL=DEBUG
+      - LOG_FORMAT=console
+      - API_DEBUG=true
+    volumes:
+      - orchestrator-data:/data
+      - orchestrator-audio:/audio
+    depends_on:
+      mock-readeck:
+        condition: service_healthy
+      mock-opennotebook:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  orchestrator-data:
+  orchestrator-audio:
+
+networks:
+  default:
+    name: weekly-digest-test

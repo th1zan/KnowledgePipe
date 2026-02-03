@@ -1,0 +1,67 @@
+# Weekly Digest
+
+## Fichiers générés
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+## Environnement virtuel
+.venv/
+venv/
+ENV/
+env/
+
+## Configuration locale
+.env
+*.local
+
+## IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+## Tests
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+## Données locales
+orchestrator/data/*.db
+orchestrator/data/*.sqlite
+
+## Audio généré
+audio/
+*.mp3
+*.wav
+
+## Logs
+*.log
+logs/
+
+## Docker
+.docker/
+
+## OS
+.DS_Store
+Thumbs.db

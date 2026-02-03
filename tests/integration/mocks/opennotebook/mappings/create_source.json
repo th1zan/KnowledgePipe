@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/sources"
+  },
+  "response": {
+    "status": 201,
+    "jsonBody": {
+      "id": "source:test789",
+      "title": "Processing...",
+      "command_id": "command:cmd123",
+      "status": "new"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

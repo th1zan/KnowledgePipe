@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/notebooks"
+  },
+  "response": {
+    "status": 201,
+    "jsonBody": {
+      "id": "notebook:test123",
+      "name": "Test Notebook",
+      "description": "Integration test notebook",
+      "archived": false,
+      "created": "2024-01-15T10:00:00Z",
+      "updated": "2024-01-15T10:00:00Z",
+      "source_count": 0,
+      "note_count": 0
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

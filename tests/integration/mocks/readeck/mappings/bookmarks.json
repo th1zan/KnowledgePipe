@@ -1,0 +1,50 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/bookmarks"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "id": "bm_test123",
+        "url": "https://example.com/article-1",
+        "title": "Test Article 1",
+        "site_name": "Example",
+        "site": "example.com",
+        "authors": ["John Doe"],
+        "published": "2024-01-10T08:00:00Z",
+        "created": "2024-01-15T10:30:00Z",
+        "type": "article",
+        "has_article": true,
+        "description": "A test article description",
+        "is_marked": false,
+        "is_archived": false,
+        "labels": ["tech", "test"],
+        "word_count": 1500,
+        "reading_time": 6
+      },
+      {
+        "id": "bm_test456",
+        "url": "https://example.com/article-2",
+        "title": "Test Article 2",
+        "site_name": "Example",
+        "site": "example.com",
+        "authors": ["Jane Doe"],
+        "published": "2024-01-11T08:00:00Z",
+        "created": "2024-01-16T10:30:00Z",
+        "type": "article",
+        "has_article": true,
+        "description": "Another test article",
+        "is_marked": false,
+        "is_archived": false,
+        "labels": ["tech"],
+        "word_count": 2000,
+        "reading_time": 8
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

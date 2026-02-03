@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/api/bookmarks"
+  },
+  "response": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json",
+      "Bookmark-Id": "bm_new123"
+    },
+    "jsonBody": {
+      "id": "bm_new123",
+      "status": "pending"
+    }
+  }
+}

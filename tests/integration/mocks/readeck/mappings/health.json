@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/profile"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "id": "user123",
+      "username": "testuser",
+      "email": "test@example.com"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

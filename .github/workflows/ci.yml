@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Run Ruff linter
+        uses: astral-sh/ruff-action@v1
+        with:
+          src: "./orchestrator/src"
+
+      - name: Run Ruff formatter check
+        uses: astral-sh/ruff-action@v1
+        with:
+          args: "format --check"
+          src: "./orchestrator/src"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: 'orchestrator/pyproject.toml'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: orchestrator/.venv
+          key: venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('orchestrator/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
+
+      - name: Install dependencies
+        working-directory: orchestrator
+        run: poetry install --no-interaction --no-root
+
+      - name: Run unit tests with coverage
+        working-directory: orchestrator
+        run: |
+          poetry run pytest ../tests \
+            --ignore=../tests/integration \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            -v
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: orchestrator/coverage.xml
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.7.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        working-directory: orchestrator
+        run: poetry install --no-interaction --no-root
+
+      - name: Start mock services
+        working-directory: tests/integration
+        run: |
+          docker compose -f docker-compose.test.yml up -d mock-readeck mock-opennotebook
+          
+          # Wait for services to be healthy
+          echo "Waiting for mock services..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/__admin/health; do sleep 2; done'
+          timeout 60 bash -c 'until curl -sf http://localhost:5055/__admin/health; do sleep 2; done'
+          echo "Mock services are ready!"
+
+      - name: Run integration tests
+        working-directory: orchestrator
+        run: |
+          poetry run pytest ../tests/integration \
+            -v \
+            -m "integration" \
+            --tb=short
+
+      - name: Stop mock services
+        if: always()
+        working-directory: tests/integration
+        run: docker compose -f docker-compose.test.yml down -v
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./orchestrator
+          push: false
+          tags: weekly-digest-orchestrator:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Optional: Push to registry on main branch
+  # push:
+  #   name: Push to Registry
+  #   runs-on: ubuntu-latest
+  #   needs: [test, build]
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     
+  #     - name: Log in to Container Registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: ./orchestrator
+  #         push: true
+  #         tags: |
+  #           ghcr.io/${{ github.repository }}/orchestrator:${{ github.sha }}
+  #           ghcr.io/${{ github.repository }}/orchestrator:latest

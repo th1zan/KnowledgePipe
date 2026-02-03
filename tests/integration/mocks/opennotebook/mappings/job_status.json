@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/api/podcasts/jobs/.*"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "job_id": "job:test456",
+      "status": "completed",
+      "episode_id": "podcast_episode:ep123"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

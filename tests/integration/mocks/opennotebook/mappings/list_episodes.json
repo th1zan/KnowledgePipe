@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/podcasts/episodes"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "id": "podcast_episode:ep123",
+        "name": "Test Episode",
+        "notebook_id": "notebook:test123",
+        "created": "2024-01-15T12:00:00Z",
+        "duration": 300
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

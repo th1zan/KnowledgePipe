@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/api/podcasts/episodes/.*/audio"
+  },
+  "response": {
+    "status": 200,
+    "body": "FAKE_AUDIO_DATA",
+    "headers": {
+      "Content-Type": "audio/mpeg"
+    }
+  }
+}
