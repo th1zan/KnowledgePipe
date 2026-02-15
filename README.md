@@ -1,6 +1,6 @@
 # Weekly Digest
 
-[![CI](https://github.com/your-user/weekly-digest/actions/workflows/ci.yml/badge.svg)](https://github.com/your-user/weekly-digest/actions/workflows/ci.yml)
+[![CI](https://github.com/th1zan/KnowledgePipe/actions/workflows/ci.yml/badge.svg)](https://github.com/th1zan/KnowledgePipe/actions/workflows/ci.yml)
 
 Synthèses textuelles et podcasts automatiques à partir de bookmarks et flux RSS.
 
